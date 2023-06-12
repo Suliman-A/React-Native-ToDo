@@ -72,7 +72,7 @@ const ToDoItem = ({ todo, onUpdateTodo, onRemoveTodo }) => {
             </View>
         </View>
         ) : (
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+        <View style={styles.card_header}>
           <Text style={styles.title}>{todo.title || 'Title'}</Text>
             <View style={styles.iconsContainer}>
                 <FontAwesome 
@@ -155,10 +155,19 @@ const styles = StyleSheet.create({
         padding: 20,
         marginBottom: 20            
     },
+    card_header: { 
+      flexDirection: 'row', 
+      alignItems: 'center', 
+      justifyContent: 'space-between',
+      borderBottomColor: '#ccc',
+      borderBottomWidth: 1,
+      paddingBottom: 20,
+      marginBottom: 20,
+    },
     title: {       
         fontWeight: '700',
         fontSize: 20,
-        marginBottom: 20, 
+        // marginBottom: 20, 
         flex: 1,
         maxWidth: '60%'    
     },
