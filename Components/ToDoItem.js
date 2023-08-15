@@ -167,7 +167,6 @@ const styles = StyleSheet.create({
     title: {       
         fontWeight: '700',
         fontSize: 20,
-        // marginBottom: 20, 
         flex: 1,
         maxWidth: '60%'    
     },
