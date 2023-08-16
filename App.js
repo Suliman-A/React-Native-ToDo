@@ -1,21 +1,14 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import ToDo from "./src/Screens/ToDo";
-const Stack = createNativeStackNavigator();
+import { StyleSheet } from "react-native";
+import { Provider } from "react-redux";
+import { store } from "./src/Redux/Store";
+import AppNavigator from "./src/navigation/AppNavigator";
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="ToDo"
-          component={ToDo}
-          options={{ title: "To Do List" }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <AppNavigator />
+    </Provider>
   );
 }
 
