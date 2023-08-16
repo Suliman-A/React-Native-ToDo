@@ -4,14 +4,13 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
   TextInput,
-  Button,
   TouchableOpacity,
   Alert,
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { userActions } from "../Redux/Slices/UserSlice";
+import AppButton from "../Components/AppButton";
 
 const Login = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -51,13 +50,7 @@ const Login = ({ navigation }) => {
           onChangeText={(password) => setPassword(password)}
         />
       </View>
-      <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={login}
-        style={styles.loginBtn}
-      >
-        <Text style={styles.loginText}>LOGIN</Text>
-      </TouchableOpacity>
+      <AppButton title="LOGIN" onPress={login} />
     </View>
   );
 };
@@ -84,14 +77,5 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     marginLeft: 20,
-  },
-  loginBtn: {
-    width: "80%",
-    borderRadius: 10,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 40,
-    backgroundColor: "darkgray",
   },
 });

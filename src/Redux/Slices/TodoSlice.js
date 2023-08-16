@@ -2,16 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const initialState = {
-  todo: [
-    {
-      id: 0,
-      userId: "",
-      title: "",
-      isCompleted: false,
-      priority: 1,
-      comments: [],
-    },
-  ],
+  todo: [],
 };
 
 export const todoSlice = createSlice({
@@ -20,7 +11,7 @@ export const todoSlice = createSlice({
   reducers: {
     setTodo: (state, action) => {
       state.todo = [...action.payload];
-      AsyncStorage.setItem("todo", JSON.stringify(state.todo));
+      // AsyncStorage.setItem("todo", JSON.stringify(state.todo));
     },
     removeTodo: (state, action) => {
       const todoIdToRemove = action.payload;
