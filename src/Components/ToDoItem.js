@@ -3,9 +3,9 @@ import React, { useState } from 'react'
 import { FontAwesome, AntDesign, Ionicons } from '@expo/vector-icons'; 
 
 const ToDoItem = ({ todo, onUpdateTodo, onRemoveTodo }) => {
+    const [comments, setComments] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [updatedTitle, setUpdatedTitle] = useState(todo.title);
-    const [comments, setComments] = useState([]);
     const [newCommentText, setNewCommentText] = useState('');
     const [updatedCommentText, setUpdatedCommentText] = useState('');
     const [editingCommentId, setEditingCommentId] = useState(null);
