@@ -6,6 +6,10 @@ import Login from "../Screens/Login";
 import { useSelector } from "react-redux";
 import TodoList from "../Screens/TodoList";
 import AddTask from "../Screens/AddTask";
+import { PaperProvider } from "react-native-paper";
+import { DarkTheme } from "../Theme/DarkTheme";
+import { LightTheme } from "../Theme/LightTheme";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const Stack = createNativeStackNavigator();
 
@@ -42,9 +46,13 @@ const AppNavigator = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
 
   return (
-    <NavigationContainer>
-      {!userInfo.username ? <AuthStack /> : <AppStack />}
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <PaperProvider theme={LightTheme}>
+        <NavigationContainer theme={LightTheme}>
+          {!userInfo.username ? <AuthStack /> : <AppStack />}
+        </NavigationContainer>
+      </PaperProvider>
+    </SafeAreaProvider>
   );
 };
 

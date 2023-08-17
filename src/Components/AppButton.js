@@ -1,16 +1,18 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { Button, useTheme } from "react-native-paper";
 import React from "react";
 
 const AppButton = (props) => {
   return (
-    <TouchableOpacity
-      activeOpacity={0.7}
+    <Button
+      mode="contained"
       onPress={props.onPress}
+      // style={styles.btn}
       style={[styles.btn, props.style]}
-      {...props}
+      labelStyle={{ fontSize: 19 }}
     >
-      <Text style={styles.btnText}>{props.title}</Text>
-    </TouchableOpacity>
+      {props.title}
+    </Button>
   );
 };
 
@@ -18,13 +20,9 @@ export default AppButton;
 
 const styles = StyleSheet.create({
   btn: {
-    width: "80%",
+    width: "100%",
     borderRadius: 10,
     height: 50,
-    alignItems: "center",
     justifyContent: "center",
-    // marginVertical: 20,
-    backgroundColor: "#40826d",
   },
-  btnText: { color: "#fff", fontSize: 19 },
 });

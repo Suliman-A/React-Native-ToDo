@@ -1,15 +1,9 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { StyleSheet, View, Alert } from "react-native";
 import { useDispatch } from "react-redux";
 import { userActions } from "../Redux/Slices/UserSlice";
+import { TextInput } from "react-native-paper";
 import AppButton from "../Components/AppButton";
 
 const Login = ({ navigation }) => {
@@ -35,7 +29,9 @@ const Login = ({ navigation }) => {
       <StatusBar style="auto" />
       <View style={styles.inputView}>
         <TextInput
+          mode="outlined"
           style={styles.TextInput}
+          label={"Username"}
           placeholder="Username"
           placeholderTextColor="#003f5c"
           onChangeText={(username) => setUsername(username)}
@@ -43,14 +39,16 @@ const Login = ({ navigation }) => {
       </View>
       <View style={styles.inputView}>
         <TextInput
+          mode="outlined"
           style={styles.TextInput}
+          label={"Password"}
           placeholder="Password"
           placeholderTextColor="#003f5c"
           secureTextEntry={true}
           onChangeText={(password) => setPassword(password)}
         />
       </View>
-      <AppButton title="LOGIN" onPress={login} />
+      <AppButton title="Login" onPress={login} />
     </View>
   );
 };
@@ -63,19 +61,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    padding: 40,
   },
   inputView: {
-    backgroundColor: "lightgray",
-    borderRadius: 10,
-    width: "70%",
-    height: 45,
+    width: "90%",
     marginBottom: 20,
-    // alignItems: "center",
-  },
-  TextInput: {
-    height: 50,
-    flex: 1,
-    padding: 10,
-    marginLeft: 20,
   },
 });
