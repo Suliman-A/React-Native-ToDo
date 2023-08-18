@@ -5,13 +5,14 @@ import { useDispatch } from "react-redux";
 import { userActions } from "../Redux/Slices/UserSlice";
 import { TextInput } from "react-native-paper";
 import AppButton from "../Components/AppButton";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Login = ({ navigation }) => {
   const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const login = () => {
+  const login = async () => {
     const userInfo = {
       username: username,
       password: password,
@@ -20,7 +21,33 @@ const Login = ({ navigation }) => {
     if (!username || !password) {
       Alert.alert("Invalid username or password");
     } else {
-      dispatch(userActions.setUserInfo(userInfo));
+      try {
+        const storedUsers = await AsyncStorage.getItem("users");
+        let users = storedUsers ? JSON.parse(storedUsers) : [];
+        console.log(users);
+
+        // Check if user already exists
+        const existingUser = users.find(
+          (user) => user.username === userInfo.username
+        );
+
+        if (existingUser) {
+          // User already exists, check password
+          if (existingUser.password === userInfo.password) {
+            // Password matches, log them in
+            dispatch(userActions.setUserInfo(userInfo));
+          } else {
+            Alert.alert("Invalid password");
+          }
+        } else {
+          // User doesn't exist, add new user
+          users.push(userInfo);
+          await AsyncStorage.setItem("users", JSON.stringify(users));
+          dispatch(userActions.setUserInfo(userInfo));
+        }
+      } catch (error) {
+        console.error("Error handling login: ", error);
+      }
     }
   };
 

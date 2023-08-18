@@ -16,14 +16,14 @@ export const todoSlice = createSlice({
     removeTodo: (state, action) => {
       const todoIdToRemove = action.payload;
       state.todo = state.todo.filter((item) => item.id !== todoIdToRemove);
-      AsyncStorage.setItem("todo", JSON.stringify(state.todo));
+      // AsyncStorage.setItem("todo", JSON.stringify(state.todo));
     },
     setPriority: (state, action) => {
       const { todoId, priority } = action.payload;
       const todo = state.todo.find((item) => item.id === todoId);
       if (todo) {
         todo.priority = priority;
-        AsyncStorage.setItem("todo", JSON.stringify(state.todo));
+        // AsyncStorage.setItem("todo", JSON.stringify(state.todo));
       }
     },
     completeTodo: (state, action) => {
@@ -31,7 +31,7 @@ export const todoSlice = createSlice({
       const todo = state.todo.find((item) => item.id === todoIdToComplete);
       if (todo) {
         todo.isCompleted = true;
-        AsyncStorage.setItem("todo", JSON.stringify(state.todo));
+        // AsyncStorage.setItem("todo", JSON.stringify(state.todo));
       }
     },
     addComment: (state, action) => {
@@ -39,7 +39,7 @@ export const todoSlice = createSlice({
       const todo = state.todo.find((item) => item.id === todoId);
       if (todo) {
         todo.comments.push(comment);
-        AsyncStorage.setItem("todo", JSON.stringify(state.todo));
+        // AsyncStorage.setItem("todo", JSON.stringify(state.todo));
       }
     },
     updateComment: (state, action) => {
@@ -49,7 +49,7 @@ export const todoSlice = createSlice({
         const comment = todo.comments.find((c) => c.id === commentId);
         if (comment) {
           comment.text = newComment;
-          AsyncStorage.setItem("todo", JSON.stringify(state.todo)); // Convert to JSON string
+          // AsyncStorage.setItem("todo", JSON.stringify(state.todo)); // Convert to JSON string
         }
       }
     },
@@ -58,7 +58,7 @@ export const todoSlice = createSlice({
       const todo = state.todo.find((item) => item.id === todoId);
       if (todo) {
         todo.comments = todo.comments.filter((c) => c.id !== commentId);
-        AsyncStorage.setItem("todo", JSON.stringify(state.todo)); // Convert to JSON string
+        // AsyncStorage.setItem("todo", JSON.stringify(state.todo)); // Convert to JSON string
       }
     },
   },

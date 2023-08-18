@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import RNPickerSelect from "react-native-picker-select";
 import AppButton from "../Components/AppButton";
 import { todoActions } from "../Redux/Slices/TodoSlice";
+import uuid from "react-native-uuid";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AddTask = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -19,22 +21,35 @@ const AddTask = ({ navigation }) => {
     { label: "Low priority task", value: 3 },
   ];
 
-  const handleAddTodo = () => {
+  const handleAddTodo = async () => {
     if (taskTitle.trim() === "" || !selectedPriority) {
       Alert.alert("Invalid input");
       return;
     }
     const newTodo = {
       title: taskTitle,
-      id: todo.length + 1,
+      id: uuid.v4(),
       userId: username,
       priority: selectedPriority,
       isCompleted: false,
     };
     // setTodos([...todos, newTodo]);
     const updatedTodoArray = [...todo, newTodo];
-    dispatch(todoActions.setTodo(updatedTodoArray));
-    setTaskTitle("");
+
+    try {
+      const existingTodos = await AsyncStorage.getItem("todos");
+      const updatedTodos = existingTodos ? JSON.parse(existingTodos) : [];
+      updatedTodos.push(newTodo);
+      await AsyncStorage.setItem("todos", JSON.stringify(updatedTodos));
+
+      dispatch(todoActions.setTodo(updatedTodoArray));
+
+      setTaskTitle("");
+      // ... (other code)
+    } catch (error) {
+      console.error("Error adding todo: ", error);
+    }
+
     Alert.alert("Task is saved", "Do you want to add another task", [
       {
         text: "Yes",
@@ -47,6 +62,7 @@ const AddTask = ({ navigation }) => {
       },
     ]);
   };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Add new task to do</Text>
