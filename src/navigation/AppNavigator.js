@@ -10,6 +10,8 @@ import { PaperProvider } from "react-native-paper";
 import { DarkTheme } from "../Theme/DarkTheme";
 import { LightTheme } from "../Theme/LightTheme";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import EditTask from "../Screens/EditTask";
+import { StatusBar } from "expo-status-bar";
 
 const Stack = createNativeStackNavigator();
 
@@ -31,12 +33,17 @@ const AppStack = () => {
       <Stack.Screen
         name="TodoList"
         component={TodoList}
-        options={{ title: "To Do List" }}
+        options={{ title: "Todo List" }}
       />
       <Stack.Screen
         name="AddTask"
         component={AddTask}
-        options={{ title: "To Do List" }}
+        options={{ title: "Add task" }}
+      />
+      <Stack.Screen
+        name="EditTask"
+        component={EditTask}
+        options={{ title: "Edit task" }}
       />
     </Stack.Navigator>
   );
@@ -49,6 +56,7 @@ const AppNavigator = () => {
     <SafeAreaProvider>
       <PaperProvider theme={LightTheme}>
         <NavigationContainer theme={LightTheme}>
+          <StatusBar style="auto" />
           {!userInfo.username ? <AuthStack /> : <AppStack />}
         </NavigationContainer>
       </PaperProvider>

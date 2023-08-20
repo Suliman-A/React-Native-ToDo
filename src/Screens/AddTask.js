@@ -1,24 +1,27 @@
-import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import RNPickerSelect from "react-native-picker-select";
-import AppButton from "../Components/AppButton";
-import { todoActions } from "../Redux/Slices/TodoSlice";
 import uuid from "react-native-uuid";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch, useSelector } from "react-redux";
+import { todoActions } from "../Redux/Slices/TodoSlice";
+import AppButton from "../Components/AppButton";
+import AppBottomSheet from "../Components/AppBottomSheet";
+import { Text, TextInput, useTheme } from "react-native-paper";
+import Container from "../Components/Container";
 
 const AddTask = ({ navigation }) => {
   const dispatch = useDispatch();
   const { todo } = useSelector((state) => state.todo);
   const { username } = useSelector((state) => state.user.userInfo);
-
-  console.log(todo);
   const [taskTitle, setTaskTitle] = useState("");
   const [selectedPriority, setSelectedPriority] = useState();
+  const { colors } = useTheme();
+  const styles = getStyles({ colors });
+
   const priorities = [
-    { label: "High priority task", value: 1 },
-    { label: "Medium priority task", value: 2 },
-    { label: "Low priority task", value: 3 },
+    { label: "High", value: 1 },
+    { label: "Medium", value: 2 },
+    { label: "Low", value: 3 },
   ];
 
   const handleAddTodo = async () => {
@@ -30,11 +33,12 @@ const AddTask = ({ navigation }) => {
       title: taskTitle,
       id: uuid.v4(),
       userId: username,
-      priority: selectedPriority,
+      priority: selectedPriority.value,
       isCompleted: false,
     };
-    // setTodos([...todos, newTodo]);
+
     const updatedTodoArray = [...todo, newTodo];
+    dispatch(todoActions.setTodo(updatedTodoArray));
 
     try {
       const existingTodos = await AsyncStorage.getItem("todos");
@@ -42,10 +46,7 @@ const AddTask = ({ navigation }) => {
       updatedTodos.push(newTodo);
       await AsyncStorage.setItem("todos", JSON.stringify(updatedTodos));
 
-      dispatch(todoActions.setTodo(updatedTodoArray));
-
       setTaskTitle("");
-      // ... (other code)
     } catch (error) {
       console.error("Error adding todo: ", error);
     }
@@ -64,78 +65,42 @@ const AddTask = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <Container scrollable>
       <Text style={styles.title}>Add new task to do</Text>
-      <View style={styles.inputContainer}>
-        <View style={styles.textInputContainer}>
-          <TextInput
-            placeholder="Title of the task"
-            value={taskTitle}
-            onChangeText={setTaskTitle}
-            style={styles.textInput}
-          />
-        </View>
-      </View>
-      <View style={styles.pickerContainer}>
-        <RNPickerSelect
-          placeholder={{
-            label: "Select task priority.",
-            value: null,
-            color: "blue",
-          }}
-          onValueChange={(value) => {
-            console.log(value);
-            setSelectedPriority(value);
-          }}
-          items={priorities}
-        />
-      </View>
+      <TextInput
+        mode="outlined"
+        placeholder="Title of the task"
+        value={taskTitle}
+        onChangeText={setTaskTitle}
+        style={styles.textInput}
+      />
+      <Text>Priority</Text>
+      <AppBottomSheet
+        data={priorities}
+        title="Priority"
+        placeholder="Choose priority"
+        onSelect={(option) => {
+          setSelectedPriority(option);
+        }}
+        value={selectedPriority?.label}
+      />
       <View style={styles.buttonContainer}>
         <AppButton title="Save task" onPress={handleAddTodo} />
       </View>
-    </View>
+    </Container>
   );
 };
 
 export default AddTask;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 20,
-  },
-  title: { fontSize: 19 },
-  inputContainer: {
-    marginVertical: 20,
-  },
-  textInputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 5,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    height: 40,
-  },
-  textInput: {
-    flex: 1,
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 5,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    marginBottom: 20,
-    height: 40,
-    justifyContent: "center",
-  },
-  buttonContainer: {
-    alignItems: "center",
-    marginBottom: 20,
-    flex: 1,
-    justifyContent: "flex-end",
-  },
-});
+const getStyles = ({ colors }) =>
+  StyleSheet.create({
+    title: { fontSize: 19 },
+    textInput: { marginVertical: 20 },
+    buttonContainer: {
+      alignItems: "center",
+      marginBottom: 20,
+      flex: 1,
+      justifyContent: "flex-end",
+    },
+  });

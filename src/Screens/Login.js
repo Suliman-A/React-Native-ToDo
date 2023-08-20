@@ -6,6 +6,7 @@ import { userActions } from "../Redux/Slices/UserSlice";
 import { TextInput } from "react-native-paper";
 import AppButton from "../Components/AppButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Container from "../Components/Container";
 
 const Login = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -52,8 +53,7 @@ const Login = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
+    <Container scrollable style={styles.container}>
       <View style={styles.inputView}>
         <TextInput
           mode="outlined"
@@ -76,7 +76,7 @@ const Login = ({ navigation }) => {
         />
       </View>
       <AppButton title="Login" onPress={login} />
-    </View>
+    </Container>
   );
 };
 
@@ -84,8 +84,6 @@ export default Login;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
     padding: 40,

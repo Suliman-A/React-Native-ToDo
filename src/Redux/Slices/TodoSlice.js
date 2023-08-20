@@ -30,7 +30,7 @@ export const todoSlice = createSlice({
       const todoIdToComplete = action.payload;
       const todo = state.todo.find((item) => item.id === todoIdToComplete);
       if (todo) {
-        todo.isCompleted = true;
+        todo.isCompleted = !todo.isCompleted;
         // AsyncStorage.setItem("todo", JSON.stringify(state.todo));
       }
     },
