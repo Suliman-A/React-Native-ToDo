@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { StyleSheet, View, Alert } from "react-native";
 import { useDispatch } from "react-redux";
@@ -7,6 +6,7 @@ import { TextInput } from "react-native-paper";
 import AppButton from "../Components/AppButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Container from "../Components/Container";
+import Storage from "../Services/Storage";
 
 const Login = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -23,8 +23,8 @@ const Login = ({ navigation }) => {
       Alert.alert("Invalid username or password");
     } else {
       try {
-        const storedUsers = await AsyncStorage.getItem("users");
-        let users = storedUsers ? JSON.parse(storedUsers) : [];
+        const storedUsers = await Storage.getItem("users");
+        let users = storedUsers ? storedUsers : [];
         console.log(users);
 
         // Check if user already exists
@@ -43,7 +43,7 @@ const Login = ({ navigation }) => {
         } else {
           // User doesn't exist, add new user
           users.push(userInfo);
-          await AsyncStorage.setItem("users", JSON.stringify(users));
+          await Storage.setItem("users", users);
           dispatch(userActions.setUserInfo(userInfo));
         }
       } catch (error) {

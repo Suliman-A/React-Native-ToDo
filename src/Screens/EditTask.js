@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { TextInput, Switch, Text, useTheme } from "react-native-paper";
 import AppButton from "../Components/AppButton";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Container from "../Components/Container";
 import AppBottomSheet from "../Components/AppBottomSheet";
+import Storage from "../Services/Storage";
 
 const EditTask = ({ route, navigation }) => {
   const { todo } = route.params;
-  // console.log(todo);
   const [title, setTitle] = useState(todo.title);
   const [priority, setPriority] = useState(todo.priority);
   const [selectedPriority, setSelectedPriority] = useState();
@@ -16,6 +15,7 @@ const EditTask = ({ route, navigation }) => {
   const [comments, setComments] = useState(todo.comments);
   const { colors } = useTheme();
   const styles = getStyles({ colors });
+
   const priorities = [
     { label: "High", value: 1 },
     { label: "Medium", value: 2 },
@@ -33,12 +33,11 @@ const EditTask = ({ route, navigation }) => {
       };
 
       // Update the todo item in AsyncStorage
-      const storedTodos = await AsyncStorage.getItem("todos");
-      const allTodos = storedTodos ? JSON.parse(storedTodos) : [];
-      const updatedTodos = allTodos.map((item) =>
+      const storedTodos = await Storage.getItem("todos");
+      const updatedTodos = storedTodos.map((item) =>
         item.id === updatedTodo.id ? updatedTodo : item
       );
-      await AsyncStorage.setItem("todos", JSON.stringify(updatedTodos));
+      await Storage.setItem("todos", updatedTodos);
 
       // Navigate back to the previous screen
       navigation.goBack();
@@ -121,7 +120,9 @@ const EditTask = ({ route, navigation }) => {
           />
         </View>
       ))}
-      <AppButton title="Save" onPress={handleSave} />
+      <View style={styles.buttonContainer}>
+        <AppButton title="Save" onPress={handleSave} />
+      </View>
     </Container>
   );
 };
@@ -143,6 +144,7 @@ const getStyles = ({ colors }) =>
     commentInput: {
       marginBottom: 5,
     },
+    buttonContainer: { flex: 1, justifyContent: "flex-end", marginBottom: 30 },
   });
 
 export default EditTask;

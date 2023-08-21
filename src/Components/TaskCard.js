@@ -8,6 +8,7 @@ import AppBottomSheet from "./AppBottomSheet";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { todoActions } from "../Redux/Slices/TodoSlice";
 import { useDispatch } from "react-redux";
+import Storage from "../Services/Storage";
 
 const TaskCard = ({ todo, onRemoveTodo, onAddComment }) => {
   const dispatch = useDispatch();
@@ -15,10 +16,8 @@ const TaskCard = ({ todo, onRemoveTodo, onAddComment }) => {
   const { colors } = useTheme();
   const [commentText, setCommentText] = useState("");
   const styles = getStyles({ colors });
-  const [isCompleted, setIsCompleted] = useState(todo.isCompleted);
-  const [visible, setVisible] = useState(false);
 
-  const handleAddComment = async () => {
+  const addComment = async () => {
     if (commentText.trim() === "") {
       return;
     }
@@ -36,14 +35,13 @@ const TaskCard = ({ todo, onRemoveTodo, onAddComment }) => {
     dispatch(todoActions.completeTodo(todo.id));
 
     try {
-      const storedTodos = await AsyncStorage.getItem("todos");
-      const allTodos = storedTodos ? JSON.parse(storedTodos) : [];
+      const storedTodos = await Storage.getItem("todos");
 
-      const updatedTodos = allTodos.map((t) =>
+      const updatedTodos = storedTodos.map((t) =>
         t.id === todo.id ? updatedTodo : t
       );
 
-      await AsyncStorage.setItem("todos", JSON.stringify(updatedTodos));
+      await Storage.setItem("todos", updatedTodos);
     } catch (error) {
       console.error("Error updating completed status: ", error);
     }
@@ -92,7 +90,7 @@ const TaskCard = ({ todo, onRemoveTodo, onAddComment }) => {
               commentsView={true}
               commentText={commentText}
               setCommentText={setCommentText}
-              handleAddComment={handleAddComment}
+              handleAddComment={addComment}
               customPicker={
                 <View style={styles.commentIconButton}>
                   <FontAwesome5 name="comment-alt" size={18} color="black" />
@@ -105,7 +103,7 @@ const TaskCard = ({ todo, onRemoveTodo, onAddComment }) => {
           </View>
           <IconButton
             onPress={() => navigation.navigate("EditTask", { todo: todo })}
-            icon="pencil-circle"
+            icon="circle-edit-outline"
             size={32}
             color="orange"
             iconColor="orange"

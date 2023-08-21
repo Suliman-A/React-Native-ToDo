@@ -1,13 +1,13 @@
 import { Alert, StyleSheet, View } from "react-native";
 import React, { useState } from "react";
 import uuid from "react-native-uuid";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { todoActions } from "../Redux/Slices/TodoSlice";
 import AppButton from "../Components/AppButton";
 import AppBottomSheet from "../Components/AppBottomSheet";
 import { Text, TextInput, useTheme } from "react-native-paper";
 import Container from "../Components/Container";
+import Storage from "../Services/Storage";
 
 const AddTask = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -41,10 +41,9 @@ const AddTask = ({ navigation }) => {
     dispatch(todoActions.setTodo(updatedTodoArray));
 
     try {
-      const existingTodos = await AsyncStorage.getItem("todos");
-      const updatedTodos = existingTodos ? JSON.parse(existingTodos) : [];
-      updatedTodos.push(newTodo);
-      await AsyncStorage.setItem("todos", JSON.stringify(updatedTodos));
+      const existingTodos = await Storage.getItem("todos");
+      existingTodos.push(newTodo);
+      await Storage.setItem("todos", existingTodos);
 
       setTaskTitle("");
     } catch (error) {

@@ -1,13 +1,19 @@
 import { StyleSheet, View, FlatList } from "react-native";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import TaskCard from "../Components/TaskCard";
 import { useDispatch, useSelector } from "react-redux";
-import { Card, IconButton, Text, useTheme } from "react-native-paper";
+import {
+  Card,
+  IconButton,
+  SegmentedButtons,
+  Text,
+  useTheme,
+} from "react-native-paper";
 import { userActions } from "../Redux/Slices/UserSlice";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { todoActions } from "../Redux/Slices/TodoSlice";
 import Container from "../Components/Container";
+import Storage from "../Services/Storage";
 
 const TodoList = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -15,52 +21,86 @@ const TodoList = ({ navigation }) => {
   const { todo } = useSelector((state) => state.todo);
   const { colors } = useTheme();
   const styles = getStyles({ colors });
+  const [sortingCriteria, setSortingCriteria] = useState([]);
 
   useFocusEffect(
     useCallback(() => {
       getTodoItems();
-    }, [])
+    }, [sortingCriteria])
   );
 
   const getTodoItems = async () => {
     try {
-      const storedTodos = await AsyncStorage.getItem("todos");
+      const storedTodos = await Storage.getItem("todos");
       if (!storedTodos) {
         return;
       }
-      const allTodos = JSON.parse(storedTodos) || [];
-      const filteredTodos = allTodos.filter((todo) => todo.userId === username);
-      dispatch(todoActions.setTodo(filteredTodos));
+      const filteredTodos = storedTodos.filter(
+        (todo) => todo.userId === username
+      );
+
+      applySorting(filteredTodos, sortingCriteria);
     } catch (e) {
       console.log("Error retrieving user todos: ", error);
     }
   };
 
-  const handleRemoveTodo = (todoId) => {};
+  const handleRemoveTodo = async (todoId) => {
+    try {
+      // Remove todo from Redux
+      dispatch(todoActions.removeTodo(todoId));
+
+      // Remove todo from AsyncStorage
+      const storedTodos = await Storage.getItem("todos");
+      const updatedTodos = storedTodos.filter((item) => item.id !== todoId);
+      await Storage.setItem("todos", updatedTodos);
+    } catch (error) {
+      console.error("Error removing todo: ", error);
+    }
+  };
 
   const handleAddComment = async (todoId, newComment) => {
     try {
-      const storedTodos = await AsyncStorage.getItem("todos");
-      const allTodos = storedTodos ? JSON.parse(storedTodos) : [];
-      // console.log({ allTodos });
+      const storedTodos = await Storage.getItem("todos");
 
-      const todoIndex = allTodos.findIndex((todo) => todo.id === todoId);
+      const todoIndex = storedTodos.findIndex((todo) => todo.id === todoId);
 
       if (todoIndex !== -1) {
         const updatedTodo = {
-          ...allTodos[todoIndex],
-          comments: allTodos[todoIndex].comments
-            ? [...allTodos[todoIndex].comments, newComment]
+          ...storedTodos[todoIndex],
+          comments: storedTodos[todoIndex].comments
+            ? [...storedTodos[todoIndex].comments, newComment]
             : [newComment], // Initialize comments array if it doesn't exist
         };
 
-        allTodos[todoIndex] = updatedTodo;
-        await AsyncStorage.setItem("todos", JSON.stringify(allTodos));
+        storedTodos[todoIndex] = updatedTodo;
+        await Storage.setItem("todos", storedTodos);
         getTodoItems();
       }
     } catch (error) {
       console.error("Error adding comment: ", error);
     }
+  };
+
+  const getCompletedTaskCount = () => {
+    return todo.filter((task) => task.isCompleted).length;
+  };
+
+  const handleSorting = (criteria) => {
+    setSortingCriteria(criteria);
+    applySorting([...todo], criteria);
+  };
+
+  const applySorting = (items, criteria) => {
+    if (criteria.includes("alphabetical")) {
+      items.sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    if (criteria.includes("priority")) {
+      items.sort((a, b) => a.priority - b.priority);
+    }
+
+    dispatch(todoActions.setTodo([...items]));
   };
 
   const logout = () => {
@@ -81,7 +121,36 @@ const TodoList = ({ navigation }) => {
         )}
         keyExtractor={(item) => item.id.toString()}
         ListHeaderComponent={
-          <Text style={styles.welcomeText}>Hi {username}</Text>
+          <View style={{ marginBottom: 24 }}>
+            <Text style={styles.welcomeText}>Hi {username}</Text>
+            <SegmentedButtons
+              multiSelect
+              value={sortingCriteria}
+              onValueChange={handleSorting}
+              buttons={[
+                {
+                  icon: "sort-alphabetical-ascending",
+                  value: "alphabetical",
+                  label: "Sort by name",
+                },
+                {
+                  value: "priority",
+                  label: "Sort by priority",
+                },
+              ]}
+            />
+          </View>
+        }
+        ListEmptyComponent={
+          <Text
+            style={{
+              ...styles.welcomeText,
+              textAlign: "center",
+              color: colors.onSurfaceVariant,
+            }}
+          >
+            No tasks to do
+          </Text>
         }
         style={{ marginVertical: -20 }}
         contentContainerStyle={{ paddingHorizontal: 10, paddingVertical: 20 }}
@@ -97,7 +166,9 @@ const TodoList = ({ navigation }) => {
               iconColor={colors.primary}
               color={colors.primary}
             />
-            <Text variant="labelSmall">Logout</Text>
+            <Text variant="labelSmall" style={styles.tabLabel}>
+              Logout
+            </Text>
           </View>
           <View style={{ alignItems: "center" }}>
             <IconButton
@@ -108,7 +179,9 @@ const TodoList = ({ navigation }) => {
               iconColor={colors.primary}
               color={colors.primary}
             />
-            <Text variant="labelSmall">2 Completed</Text>
+            <Text variant="labelSmall" style={styles.tabLabel}>
+              {getCompletedTaskCount()} Completed
+            </Text>
           </View>
           <View style={{ alignItems: "center" }}>
             <IconButton
@@ -119,7 +192,9 @@ const TodoList = ({ navigation }) => {
               iconColor={colors.primary}
               color={colors.primary}
             />
-            <Text variant="labelSmall">{todo?.length} task</Text>
+            <Text variant="labelSmall" style={styles.tabLabel}>
+              {todo?.length} task
+            </Text>
           </View>
           <View style={{ alignItems: "center" }}>
             <IconButton
@@ -130,7 +205,9 @@ const TodoList = ({ navigation }) => {
               iconColor={colors.primary}
               color={colors.primary}
             />
-            <Text variant="labelSmall">Add task</Text>
+            <Text variant="labelSmall" style={styles.tabLabel}>
+              Add task
+            </Text>
           </View>
         </View>
       </Card>
@@ -142,25 +219,22 @@ export default TodoList;
 
 const getStyles = ({ colors }) =>
   StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-      padding: 20,
-    },
     welcomeText: {
       fontSize: 19,
       fontWeight: "700",
       marginBottom: 20,
-      textAlign: "center",
+      // textAlign: "center",
     },
     bottomTab: {
       paddingTop: 16,
       marginHorizontal: -20,
       paddingBottom: 40,
+      borderRadius: 0,
     },
     rowContainer: {
       flexDirection: "row",
       justifyContent: "space-between",
       marginHorizontal: 24,
     },
+    tabLabel: { color: colors.primary, fontSize: 12, fontWeight: "700" },
   });
