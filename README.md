@@ -1,7 +1,5 @@
 # React-Native-ToDo
 
-![Simulator Screen Shot - iPhone 14 Pro Max - 2023-06-12 at 21 00 52](https://github.com/Suliman-A/React-Native-ToDo/assets/73099458/c23919ee-b7fa-4a2b-95ad-2035d49de143)
-
 # Running React Native Expo App
 
 This repository contains a React Native Expo app that you can easily run on your local machine. Follow the instructions below to set up and run the app.
