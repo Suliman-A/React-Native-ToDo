@@ -41,7 +41,7 @@ const AppBottomSheet = (props) => {
   }, []);
 
   const renderItem = useCallback(
-    ({ item }) => {
+    ({ item, index }) => {
       const label = item.label || item.text;
 
       const isSelected =
@@ -50,7 +50,7 @@ const AppBottomSheet = (props) => {
 
       return (
         <TouchableOpacity
-          key={item.key}
+          key={index}
           style={styles.itemContainer}
           onPress={() => (props.onSelect ? handleOptionSelect(item) : null)}
         >

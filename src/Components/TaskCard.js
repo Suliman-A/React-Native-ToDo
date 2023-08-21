@@ -5,7 +5,6 @@ import uuid from "react-native-uuid";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import AppBottomSheet from "./AppBottomSheet";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { todoActions } from "../Redux/Slices/TodoSlice";
 import { useDispatch } from "react-redux";
 import Storage from "../Services/Storage";
@@ -70,7 +69,6 @@ const TaskCard = ({ todo, onRemoveTodo, onAddComment }) => {
             <Switch
               style={{ alignSelf: "center" }}
               value={todo.isCompleted}
-              // onValueChange={(value) => setIsCompleted(value)}
               onValueChange={handleToggleCompleted}
             />
           </View>
@@ -107,7 +105,6 @@ const TaskCard = ({ todo, onRemoveTodo, onAddComment }) => {
             size={32}
             color="orange"
             iconColor="orange"
-            // style={{ borderWidth: 1 }}
           />
           <IconButton
             onPress={() => onRemoveTodo(todo.id)}
@@ -151,7 +148,6 @@ const getStyles = ({ colors }) =>
       justifyContent: "space-around",
       borderTopWidth: 0.5,
       borderTopColor: colors.outline,
-      // alignItems: "flex-end",
     },
     commentIconButton: {
       flexDirection: "row",
