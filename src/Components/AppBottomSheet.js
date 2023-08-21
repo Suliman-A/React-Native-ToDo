@@ -133,20 +133,17 @@ const AppBottomSheet = (props) => {
           {props.commentsView && (
             <TextInput
               mode="outlined"
-              // style={styles.commentInput}
               placeholder="Write a comment"
               value={props.commentText}
               onChangeText={props.setCommentText}
               onSubmitEditing={props.handleAddComment}
               render={(innerProps) => <BottomSheetTextInput {...innerProps} />}
-
-              // onFocus={() => bottomSheetRef.current.snapToIndex(2)}
             />
           )}
           <BottomSheetFlatList
             data={props.data}
             renderItem={renderItem}
-            keyExtractor={(item) => item.key}
+            keyExtractor={(item, index) => index.toString()}
             ListEmptyComponent={
               <Text style={styles.emptyListText}>No options to display</Text>
             }
